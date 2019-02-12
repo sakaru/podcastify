@@ -95,7 +95,7 @@ class Economist(BasePodcast):
         if "Item" not in item:
             # How did this occur?
             return False
-        item = self._dynamodb_to_normal([item["Item"]])[0]
+        item = self._dynamodb_to_normal(item["Item"])
         # event:
         # {
         # "taskId":"022116ec-7dca-4696-af9a-d3f5fa1ab4d0",
@@ -156,11 +156,9 @@ class Economist(BasePodcast):
             ExpressionAttributeValues={":status": {"S": self.status_merged}}
         )
 
-        old = old.get("Items", [])
-        new = new.get("Items", [])
         # Combine the two lists
-        old = self._dynamodb_to_normal(old)
-        new = self._dynamodb_to_normal(new)
+        old = [self._dynamodb_to_normal(x) for x in old.get("Items", [])]
+        old = [self._dynamodb_to_normal(x) for x in new.get("Items", [])]
         items = old + new
         # Sort by date, then by sort_order
         items = sorted(items, key=cmp_to_key(self._sort))
@@ -262,7 +260,7 @@ class Economist(BasePodcast):
                 "status": {"S": old_status},
             }
         )
-        item = self._dynamodb_to_normal([item['Item']])[0]
+        item = self._dynamodb_to_normal(item['Item'])
         # Build the new item
         new_item = {}
         for k,v in item.items():
@@ -292,17 +290,14 @@ class Economist(BasePodcast):
             Item=new_item
         )
 
-    def _dynamodb_to_normal(self, items):
+    def _dynamodb_to_normal(self, item):
         # Strip all the weird String/Number field definitions from DynamoDB objects
-        x = []
-        for item in items:
-            i = {}
-            for key in item.keys():
-                if "N" == list(item[key].keys())[0]:
-                    i[key] = int(item[key]["N"])
-                else:
-                    i[key] = item[key]["S"]
-            x.append(i)
+        x = {}
+        for key in item.keys():
+            if "N" == list(item[key].keys())[0]:
+                x[key] = int(item[key]["N"])
+            else:
+                x[key] = item[key]["S"]
         return x
 
     def _enrich(self, path):
