@@ -158,7 +158,7 @@ class Economist(BasePodcast):
 
         # Combine the two lists
         old = [self._dynamodb_to_normal(x) for x in old.get("Items", [])]
-        old = [self._dynamodb_to_normal(x) for x in new.get("Items", [])]
+        new = [self._dynamodb_to_normal(x) for x in new.get("Items", [])]
         items = old + new
         # Sort by date, then by sort_order
         items = sorted(items, key=cmp_to_key(self._sort))
