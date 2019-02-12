@@ -255,14 +255,10 @@ class Economist(BasePodcast):
             }
         )
         item = self._dynamodb_to_normal(item['Item'])
+
         # Build the new item
         new_item = {}
-        for k,v in item.items():
-            t = "S"
-            if type(v) in [int, float]:
-                t = "N"
-            new_item[k] = {t: str(v)}
-        for k,v in new_attributes.items():
+        for k,v in item.items() | new_attributes.items():
             t = "S"
             if type(v) in [int, float]:
                 t = "N"
