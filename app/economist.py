@@ -265,19 +265,22 @@ class Economist(BasePodcast):
             new_item[k] = {t: str(v)}
         new_item["status"] = {"S": new_status}
 
-        # TODO use transact_write_items()
-        # Delete the old item
-        self.dynamodb.delete_item(
-            TableName=self.dynamodb_table,
-            Key={
-                "task_id": {"S": task_id},
-                "status": {"S": old_status},
-            }
-        )
-        # Create the new item
-        self.dynamodb.put_item(
-            TableName=self.dynamodb_table,
-            Item=new_item
+        # Delete and put a new item
+        self.dynamodb.transact_write_items(
+            TransactItems=[{
+                "Delete": {
+                    "TableName": self.dynamodb_table,
+                    "Key": {
+                        "task_id": {"S": task_id},
+                        "status": {"S": old_status},
+                    }
+                }
+            },{
+                "Put": {
+                    "TableName": self.dynamodb_table,
+                    "Item": new_item
+                }
+            }]
         )
 
     def _dynamodb_to_normal(self, item):
