@@ -190,13 +190,7 @@ class Economist(BasePodcast):
         self.storage.put("{}{}.xml".format(self.s3_public_prefix, self.source_name), output)
 
         for item in new:
-            # TODO: cleanup new_attributes
-            new_attributes = {
-                "duration": item["duration"],
-                "bytes": item["bytes"],
-                "link": item["link"],
-            }
-            self._update_status(item["task_id"], self.status_awaiting_merge, self.status_merged, new_attributes)
+            self._update_status(item["task_id"], self.status_awaiting_merge, self.status_merged)
         return "Created successfully. {} new and {} old items found".format(len(new), len(old))
 
     def _ingest_item(self, guid, text, title, image, pub_date, sort_order):
