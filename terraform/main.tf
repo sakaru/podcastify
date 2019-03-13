@@ -1,3 +1,12 @@
+terraform {
+  backend "remote" {
+    organization = "sid-test"
+    workspaces {
+      name = "podcastify"
+    }
+  }
+}
+
 provider "aws" {
   version = "~> 1.58"
   region  = "${var.aws_region}"
