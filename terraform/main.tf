@@ -11,7 +11,7 @@ module "economist" {
   s3_bucket_prefix   = "${var.s3_bucket_prefix}"
   aws_region         = "${var.aws_region}"
   aws_profile        = "${var.aws_profile}"
-  schedule           = "0 21-23 ? * MON-SAT *"
+  schedule           = "0 21-23 ? * SUN-FRI *"
   polly_audio_format = "mp3"
 }
 
