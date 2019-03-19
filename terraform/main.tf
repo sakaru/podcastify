@@ -1,6 +1,6 @@
 terraform {
   backend "remote" {
-    organization = "sid-test"
+    organization = "sakaru"
     workspaces {
       name = "podcastify"
     }
