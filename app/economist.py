@@ -62,7 +62,6 @@ class Economist(BasePodcast):
                     guid=guid,
                     text=article["body"],
                     title=article["headline"],
-                    # link=article["shareLink"],
                     pub_date=pub_date,
                     sort_order=sort_order,
                     image=image_path,
@@ -77,7 +76,6 @@ class Economist(BasePodcast):
                 guid=guid,
                 text=gobbet,
                 title="World in brief ({})".format(date),
-                # link=gobbets[0]["shareLink"],
                 pub_date=pub_date,
                 sort_order=sort_order,
                 image=image_path,
@@ -85,7 +83,6 @@ class Economist(BasePodcast):
         return "Ingested {} new item(s) successfully".format(count_new)
 
     def checker(self, event, context):
-        # Fired by SNS when a polly job completes
         # Get the item from DynamoDB (by task_id)
         item = self.dynamodb.get_item(
             TableName=self.dynamodb_table,
@@ -96,20 +93,6 @@ class Economist(BasePodcast):
             # How did this occur?
             return False
         item = self._dynamodb_to_normal(item["Item"])
-        # event:
-        # {
-        # "taskId":"022116ec-7dca-4696-af9a-d3f5fa1ab4d0",
-        # "taskStatus":"COMPLETED",
-        # "outputUri":"s3://net.karunaratne.net.podcastify-economist/public/audio/economist.022116ec-7dca-4696-af9a-d3f5fa1ab4d0.ogg",
-        # "creationTime":"2019-01-16T11:44:54.761Z",
-        # "requestCharacters":2942,
-        # "snsTopicArn":"arn:aws:sns:ap-southeast-1:997715566399:decaf-polly",
-        # "outputFormat":"Ogg",
-        # "sampleRate":"22050",
-        # "speechMarkTypes":[],
-        # "textType":"Text",
-        # "voiceId":"Joanna"
-        # }
         # If successful, enrich items and update status
         if event["taskStatus"].lower() == "completed":
             l = len("s3://{}".format(self.bucket))+1
@@ -124,19 +107,6 @@ class Economist(BasePodcast):
             return False
 
     def creator(self, event, context):
-        # Sample Item (after self._dynamodb_to_normal()):
-        # {
-        # "author": "Economist Espresso",
-        # "guid": "economist-decaf-aba2b11d01c3742d77a4391276731579",
-        # "link": "https://espresso.economist.com/aba2b11d01c3742d77a4391276731579",
-        # "pub_date": "2019-01-19T00:00:00",
-        # "sort_order": 0,
-        # "status": "waiting_for_merge",
-        # "task_id": "49a48bea-9d54-40ab-8314-c9378dd837bd",
-        # "text": "lorem ipsum",
-        # "title": "Scattered: art and migration",
-        # }
-        # Fired periodically
         # Read all status="merged" and status="waiting_for_merge" items
         # If none in "waiting_for_merge" state, stop
         new = self.dynamodb.scan(
@@ -162,15 +132,13 @@ class Economist(BasePodcast):
         items = old + new
         # Sort by date, then by sort_order
         items = sorted(items, key=cmp_to_key(self._sort))
-        # Create resulting XML
-        # TODO: parameterize
         output = templates.header.format(
             title="Economist Espresso, Decaffeinated",
             link="https://economist.com/",
             language=self.language_code,
             author="Economist Espresso",
             description="The nearly daily economist espresso, decaf",
-            podcast_image="https://is2-ssl.mzstatic.com/image/thumb/Purple117/v4/af/f4/31/aff4318d-d64d-c574-6819-db6f19ecf035/source/1200x630bb.jpg",
+            podcast_image="https://is2-ssl.mzstatic.com/image/thumb/Purple117/v4/af/f4/31/aff4318d-d64d-c574-6819-db6f19ecf035/source/1200x630bb.jpg", #TODO: remove hotlinking
         )
 
         for item in items:
@@ -194,7 +162,6 @@ class Economist(BasePodcast):
         return "Created successfully. {} new and {} old items found".format(len(new), len(old))
 
     def _ingest_item(self, guid, text, title, image, pub_date, sort_order):
-        # Avoid double-ingestion
         if self._already_ingested(guid):
             return 0
         # Schedule Polly
@@ -331,7 +298,7 @@ class Economist(BasePodcast):
 
     def _make_ssml(self, title, html):
         txt = self._strip_tags(html)
-        txt = escape(txt, quote=False) # ampersands and other entities\
+        txt = escape(txt, quote=False) # ampersands and other entities
         txt = txt.replace("\n", "</p><p>")
         txt = "<p>{title}</p><p>{text}</p>".format(title=title, text=txt)
         ssml = "<speak>{}<break time=\"2s\"/></speak>".format(txt)
