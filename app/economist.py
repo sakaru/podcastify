@@ -87,17 +87,16 @@ class Economist(BasePodcast):
     def checker(self, event, context):
         # Fired by SNS when a polly job completes
         # Get the item from DynamoDB (by task_id)
-        polly_event = json.loads(a.get("Records")[0].get("Sns").get("Message"))
         item = self.dynamodb.get_item(
             TableName=self.dynamodb_table,
-            Key={"task_id": {"S": polly_event["taskId"]},
+            Key={"task_id": {"S": event["taskId"]},
                  "status": {"S": self.status_ingest}}
         )
         if "Item" not in item:
             # How did this occur?
             return False
         item = self._dynamodb_to_normal(item["Item"])
-        # polly_event:
+        # event:
         # {
         # "taskId":"022116ec-7dca-4696-af9a-d3f5fa1ab4d0",
         # "taskStatus":"COMPLETED",
@@ -112,14 +111,14 @@ class Economist(BasePodcast):
         # "voiceId":"Joanna"
         # }
         # If successful, enrich items and update status
-        if polly_event["taskStatus"].lower() == "completed":
+        if event["taskStatus"].lower() == "completed":
             l = len("s3://{}".format(self.bucket))+1
-            key = polly_event["outputUri"][l:]
+            key = event["outputUri"][l:]
             self.storage.make_public(key)
-            new_attributes = self._enrich(polly_event["outputUri"])
+            new_attributes = self._enrich(event["outputUri"])
             self._update_status(item["task_id"], self.status_ingest,
                                 self.status_awaiting_merge, new_attributes)
-            return "Checked task {}".format(polly_event["taskId"])
+            return "Checked task {}".format(event["taskId"])
         else:
             # oh no, the polly task failed? retry?
             return False

@@ -2,6 +2,7 @@ from os import getenv
 from importlib import import_module
 import boto3
 from storage import Storage
+import json
 
 source_name    = getenv("source_name")
 bucket         = getenv("bucket")
@@ -49,6 +50,7 @@ def ingestor(event, context):
     return p.ingestor(event, context)
 def checker(event, context):
     p = load()
+    event = json.loads(event.get("Records")[0].get("Sns").get("Message"))
     return p.checker(event, context)
 def creator(event, context):
     p = load()
