@@ -67,6 +67,14 @@ resource "aws_iam_policy" "podcastify" {
               "${aws_dynamodb_table.podcast_polly_tasks.arn}/*",
               "${aws_dynamodb_table.podcast_polly_tasks.arn}"
             ]
+        },
+        {
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:${var.aws_region}:*:*",
+            "Effect": "Allow"
         }
     ]
 }
