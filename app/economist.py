@@ -107,24 +107,27 @@ class Economist(BasePodcast):
             return False
 
     def creator(self, event, context):
+        paginator = self.dynamodb.get_paginator('scan')
         # Read all status="merged" and status="waiting_for_merge" items
         # If none in "waiting_for_merge" state, stop
-        new = self.dynamodb.scan(
+        new = paginator.paginate(
             TableName=self.dynamodb_table,
             FilterExpression="#S=:status",
             ExpressionAttributeNames={"#S": "status"},
             ExpressionAttributeValues={":status": {
                 "S": self.status_awaiting_merge}}
-        )
-        if "Items" not in new:
+        ).build_full_result()
+
+        if new["Count"] == 0:
             print("No new items")
             return False
-        old = self.dynamodb.scan(
+
+        old = paginator.paginate(
             TableName=self.dynamodb_table,
             FilterExpression="#S=:status",
             ExpressionAttributeNames={"#S": "status"},
             ExpressionAttributeValues={":status": {"S": self.status_merged}}
-        )
+        ).build_full_result()
 
         # Combine the two lists
         old = [self._dynamodb_to_normal(x) for x in old.get("Items", [])]
