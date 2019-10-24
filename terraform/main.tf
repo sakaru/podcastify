@@ -8,13 +8,13 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 1.58"
+  version = "~> 2.7"
   region  = "${var.aws_region}"
   profile = "${var.aws_profile}"
 }
 
 module "economist" {
-  source             = "modules/podcast"
+  source             = "./modules/podcast"
   name               = "economist"
   polly_texttype     = "ssml"
   s3_bucket_prefix   = "${var.s3_bucket_prefix}"
