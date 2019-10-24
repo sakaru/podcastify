@@ -63,7 +63,7 @@ class Economist(BasePodcast):
                     text=article["body"],
                     title=article["headline"],
                     pub_date=pub_date,
-                    sort_order=sort_order,
+                    sort_order=sort_order+1,
                     image=image_path,
                 )
 
@@ -71,13 +71,12 @@ class Economist(BasePodcast):
             gobbet = "".join(x["body"] for x in gobbets)
             guid = "economist-decaf-gobbet-{}".format(date)
             image_path = self._import_image(guid, gobbets[0]["image"])
-            sort_order += 1
             count_new += self._ingest_item(
                 guid=guid,
                 text=gobbet,
                 title="World in brief ({})".format(date),
                 pub_date=pub_date,
-                sort_order=sort_order,
+                sort_order=0,
                 image=image_path,
             )
         return "Ingested {} new item(s) successfully".format(count_new)
