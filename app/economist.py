@@ -138,6 +138,7 @@ class Economist(BasePodcast):
             title="Economist Espresso, Decaffeinated",
             link="https://economist.com/",
             language=self.language_code,
+            output_format=self.output_format,
             author="Economist Espresso",
             description="The nearly daily economist espresso, decaf",
             podcast_image="https://is2-ssl.mzstatic.com/image/thumb/Purple117/v4/af/f4/31/aff4318d-d64d-c574-6819-db6f19ecf035/source/1200x630bb.jpg", #TODO: remove hotlinking

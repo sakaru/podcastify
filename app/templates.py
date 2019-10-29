@@ -17,7 +17,7 @@ item="""
 	<title><![CDATA[{item_title}]]></title>
 	<itunes:author><![CDATA[{item_author}]]></itunes:author>
 	<description><![CDATA[{item_description}]]></description>
-	<enclosure length="{item_bytes}" type="audio/ogg" url="{item_url}"/>
+	<enclosure length="{item_bytes}" type="audio/{output_format}" url="{item_url}"/>
 	<guid>{item_guid}</guid>
 	<pubDate>{item_pub_date}</pubDate>
 	<itunes:duration>{item_duration}</itunes:duration>
