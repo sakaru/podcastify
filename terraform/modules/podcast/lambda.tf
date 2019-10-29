@@ -25,7 +25,7 @@ resource "aws_lambda_function" "ingestor" {
   function_name                  = "podcastify-ingestor-${var.name}"
   role                           = "${aws_iam_role.podcastify.arn}"
   handler                        = "main.ingestor"
-  source_code_hash               = "${filesha256("../builds/app.zip")}"
+  source_code_hash               = "${filebase64sha256("../builds/app.zip")}"
   runtime                        = "python3.7"
   timeout                        = 120
   description                    = "Reads text, schedules Text-to-speach tasks"
@@ -53,7 +53,7 @@ resource "aws_lambda_function" "checker" {
   function_name    = "podcastify-checker-${var.name}"
   role             = "${aws_iam_role.podcastify.arn}"
   handler          = "main.checker"
-  source_code_hash = "${base64sha256("${path.root}/../builds/app.zip")}"
+  source_code_hash = "${filebase64sha256("${path.root}/../builds/app.zip")}"
   runtime          = "python3.7"
   timeout          = 120
   description      = "Check the output of the Polly tasks"
@@ -81,7 +81,7 @@ resource "aws_lambda_function" "creator" {
   function_name                  = "podcastify-creator-${var.name}"
   role                           = "${aws_iam_role.podcastify.arn}"
   handler                        = "main.creator"
-  source_code_hash               = "${filesha256("${path.root}/../builds/app.zip")}"
+  source_code_hash               = "${filebase64sha256("${path.root}/../builds/app.zip")}"
   runtime                        = "python3.7"
   timeout                        = 120
   description                    = "Creates the final podcast RSS"
@@ -130,7 +130,7 @@ resource "aws_lambda_permission" "creator_allow_cloudwatch" {
 
 resource "aws_lambda_layer_version" "mutagen" {
   filename            = "${path.root}/../builds/mutagen-${var.mutagen_version}.zip"
-  source_code_hash    = "${filesha256("${path.root}/../builds/mutagen-${var.mutagen_version}.zip")}"
+  source_code_hash    = "${filebase64sha256("${path.root}/../builds/mutagen-${var.mutagen_version}.zip")}"
   layer_name          = "python3-mutagen-${replace(var.mutagen_version, ".", "-")}"
   license_info        = "GPL-2.0-or-later"
   description         = "Mutagen is a Python module to handle audio metadata"
