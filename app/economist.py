@@ -134,6 +134,8 @@ class Economist(BasePodcast):
         items = old + new
         # Sort by date, then by sort_order
         items = sorted(items, key=cmp_to_key(self._sort))
+        # Trim to the first 100 items
+        items = items[0:100]
         output = templates.header.format(
             title="Economist Espresso, Decaffeinated",
             link="https://economist.com/",
