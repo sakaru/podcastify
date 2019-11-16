@@ -1,7 +1,7 @@
 from os import getenv
 from importlib import import_module
 import boto3
-from storage import Storage
+from lib.storage import Storage
 import json
 
 source_name    = getenv("source_name")

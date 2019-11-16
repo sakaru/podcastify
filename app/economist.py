@@ -2,7 +2,7 @@ from datetime import datetime
 import time
 from functools import cmp_to_key
 import json
-import templates
+import lib.templates as templates
 import urllib
 import boto3
 import email.utils

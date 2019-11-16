@@ -3,7 +3,8 @@
 function build_app() {
   o="../builds/app.zip"
   [ -f "$o" ] && rm "$o"
-  zip -X -r $o *.py
+  find . -name '*.pyc' -delete
+  zip -X -r $o *.py lib
 }
 
 # Build the mutagen layer
