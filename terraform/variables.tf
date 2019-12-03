@@ -1,17 +1,17 @@
 variable "aws_region" {
-  type = "string"
+  type        = string
   description = "AWS region to create infrastructure in"
-  default = "ap-southeast-1"
+  default     = "ap-southeast-1"
 }
 
 variable "aws_profile" {
-  type = "string"
+  type        = string
   description = "AWS profile to use"
-  default = "default"
+  default     = "default"
 }
 
 variable "s3_bucket_prefix" {
-  type = "string"
+  type        = string
   description = "S3 bucket name prefix"
-  default = "com.example.podcastify"
+  default     = "com.example.podcastify"
 }

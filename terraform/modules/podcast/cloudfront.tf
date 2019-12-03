@@ -4,15 +4,15 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 
 // Cloudfront origin for the podcast
 resource "aws_cloudfront_distribution" "podcast_distribution" {
-  depends_on = ["aws_s3_bucket.podcast", "aws_s3_bucket.logs"]
+  depends_on = [aws_s3_bucket.podcast, aws_s3_bucket.logs]
 
   origin {
-    domain_name = "${aws_s3_bucket.podcast.bucket_regional_domain_name}"
-    origin_id   = "${aws_s3_bucket.podcast.id}"
+    domain_name = aws_s3_bucket.podcast.bucket_regional_domain_name
+    origin_id   = aws_s3_bucket.podcast.id
     origin_path = "/public"
 
     s3_origin_config {
-      origin_access_identity = "${aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path}"
+      origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
     }
   }
 
@@ -23,13 +23,13 @@ resource "aws_cloudfront_distribution" "podcast_distribution" {
 
   logging_config {
     include_cookies = false
-    bucket          = "${aws_s3_bucket.logs.bucket_domain_name}"
+    bucket          = aws_s3_bucket.logs.bucket_domain_name
   }
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "${aws_s3_bucket.podcast.id}"
+    target_origin_id = aws_s3_bucket.podcast.id
 
     forwarded_values {
       query_string = false
@@ -51,7 +51,7 @@ resource "aws_cloudfront_distribution" "podcast_distribution" {
     }
   }
 
-  tags = "${var.aws_tags}"
+  tags = var.aws_tags
 
   viewer_certificate {
     cloudfront_default_certificate = true

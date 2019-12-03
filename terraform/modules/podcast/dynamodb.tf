@@ -25,5 +25,5 @@ resource "aws_dynamodb_table" "podcast_polly_tasks" {
     type = "S"
   }
 
-  tags = "${var.aws_tags}"
+  tags = var.aws_tags
 }

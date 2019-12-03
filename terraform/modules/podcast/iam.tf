@@ -17,12 +17,12 @@ resource "aws_iam_role" "podcastify" {
 }
 EOF
 
-  tags = "${var.aws_tags}"
+  tags = var.aws_tags
 }
 
 resource "aws_iam_role_policy_attachment" "attach" {
-  role       = "${aws_iam_role.podcastify.name}"
-  policy_arn = "${aws_iam_policy.podcastify.arn}"
+  role       = aws_iam_role.podcastify.name
+  policy_arn = aws_iam_policy.podcastify.arn
 }
 
 resource "aws_iam_policy" "podcastify" {
